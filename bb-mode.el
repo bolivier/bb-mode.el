@@ -39,10 +39,33 @@
   (interactive)
   (message "hello bb-mode!"))
 
+
+
+(defun bb-mode--exec-process (cmd &optional comint)
+  "Execute a process running CMD."
+  (let ((compilation-buffer-name-function
+         (lambda (mode)
+           (format "*bb: - %s*" cmd))))
+    (message (concat "Running " cmd))
+    (compile (concat "bb " cmd) comint)))
+
+(defun bb-mode--get-bb-tasks ()
+  (interactive)
+  (let* ((dir (locate-dominating-file default-directory "bb.edn"))
+         (filename (concat dir "bb.edn"))
+         (bb-contents (with-file-contents! filename
+                        (car (parseedn-read))))
+         (tasks (-remove #'keywordp
+                         (hash-table-keys (gethash
+                                           :tasks
+                                           bb-contents))))
+         (selected-task (completing-read "Tasks: " tasks)))
+    (bb-mode--exec-process selected-task)))
+
 (defvar bb-mode--command-map
   (let ((map (make-sparse-keymap)))
     (define-key map "h" 'bb-mode-greet)
-    (define-key map "t" 'bb-mode-greet)
+    (define-key map "t" 'bb-mode--get-bb-tasks)
     map)
   "Keymap for `bb-mode' commands")
 
@@ -51,18 +74,6 @@
     (define-key map (kbd bb-mode--command-prefix) bb-mode--command-map)
     map)
   "Keymap for `bb-mode'")
-
-(defun bb-mode--get-bb-tasks ()
-  (interactive)
-  (let* ((dir (locate-dominating-file default-directory "bb.edn"))
-         (filename (concat dir "bb.edn")))
-    (with-file-contents! filename
-      (let ((bb-contents (car (parseedn-read))))
-        (-remove
-         #'keywordp
-         (hash-table-keys (gethash
-                           :tasks
-                           bb-contents)))))))
 
 (define-minor-mode bb-mode
   "Mode for working with bb.edn tasks within Emacs"
