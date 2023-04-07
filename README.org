@@ -1,0 +1,8 @@
+#+title: bb-mode readme
+
+A mode for running babashka commands within a project.
+
+Currently only one command exists in the map, `C-x j t` which reads a dominating
+bb.edn file, and sends the task list to `completing-read`.
+
+Selecting one of those tasks runs it it a compile buffer.
