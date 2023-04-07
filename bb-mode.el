@@ -39,19 +39,29 @@
   (interactive)
   (message "hello bb-mode!"))
 
+(defun bb-mode--project-dir ()
+  (interactive)
+  (locate-dominating-file (buffer-file-name) "bb.edn"))
 
+(defun bb-mode--cd-to-root ()
+  (interactive)
+  (cd (bb-mode--project-dir)))
 
 (defun bb-mode--exec-process (cmd &optional comint)
   "Execute a process running CMD."
   (let ((compilation-buffer-name-function
          (lambda (mode)
-           (format "*bb: - %s*" cmd))))
+           (format "*bb: - %s*" cmd)))
+        current-dir default-directory)
     (message (concat "Running " cmd))
-    (compile (concat "bb " cmd) comint)))
+    (save-excursion
+      (bb-mode--cd-to-root)
+      (compile (concat "bb " cmd) comint)
+      (cd current-dir))))
 
 (defun bb-mode--get-bb-tasks ()
   (interactive)
-  (let* ((dir (locate-dominating-file default-directory "bb.edn"))
+  (let* ((dir (bb-mode--project-dir))
          (filename (concat dir "bb.edn"))
          (bb-contents (with-file-contents! filename
                         (car (parseedn-read))))
