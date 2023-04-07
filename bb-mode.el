@@ -19,12 +19,6 @@
 ;;
 ;;; Code:
 
-
-
-(defun bb-mode-something ()
-  (interactive)
-  (message "using bb mode"))
-
 (defvar bb-mode--modeline-name " bb")
 
 (defgroup bb-mode nil
@@ -34,10 +28,6 @@
 (defcustom bb-mode--command-prefix "C-x j"
   "Prefix for bb-mode commands"
   :group 'bb-mode)
-
-(defun bb-mode-greet ()
-  (interactive)
-  (message "hello bb-mode!"))
 
 (defun bb-mode--project-dir ()
   (interactive)
@@ -74,7 +64,6 @@
 
 (defvar bb-mode--command-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "h" 'bb-mode-greet)
     (define-key map "t" 'bb-mode--get-bb-tasks)
     map)
   "Keymap for `bb-mode' commands")
