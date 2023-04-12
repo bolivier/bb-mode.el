@@ -74,6 +74,7 @@
     map)
   "Keymap for `bb-mode'")
 
+;;;###autoload
 (define-minor-mode bb-mode
   "Mode for working with bb.edn tasks within Emacs"
   :keymap bb-mode-map
